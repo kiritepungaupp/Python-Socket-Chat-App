@@ -11,9 +11,12 @@ DISCONNECT_MESSAGE = "!DISCONNECT"
 
 
 def connect():
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect(ADDR)
-    return client
+    try:
+        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client.connect(ADDR)
+        return client
+    except Exception as e:
+        print(f'[ERROR]: {e}')
 
 
 def send(client, msg):
@@ -26,7 +29,7 @@ def receive_messages(client):
         try:
             msg = client.recv(1024).decode(FORMAT)
             if msg:
-                print(f"\n[{datetime.datetime.now().strftime('%H:%M')}] {msg}" )
+                print(f"\n[{datetime.datetime.now().strftime('%H:%M')}] {msg}",end = '' )
             else:
                 break
         except Exception as e:
