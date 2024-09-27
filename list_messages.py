@@ -19,6 +19,7 @@ def start():
     while True:
         msg = connection.recv(1024).decode(FORMAT)
         print(msg)
+        
 
 
 start()
