@@ -40,28 +40,27 @@ def handle_client(conn, addr):
             elif msg.startswith('/connect'):
                 try:
 
-                    _, target_id = msg.split()
-                    #error dont know why, fix tonight
-                    target_conn = clients.get(target_id)
-                    # if target_conn:
-                    #     #conn.sendall(f"Connected".encode(FORMAT))
-                    #     while True:
-                    #         direct_msg = conn.recv(1024).decode(FORMAT)
-                    #         if direct_msg == DISCONNECT_MESSAGE:
-                    #             break
-                    #         target_conn.sendall(f"[{client_id}]: {direct_msg}".encode(FORMAT))
-                    # else:
-                    #     conn.sendall(f"Client {target_id} not found.".encode(FORMAT))
+                    _,target_id = msg.split(" ",1)
+
+                    
+                    target_conn = clients.get(str(target_id))
+                    if target_conn:
+                        conn.sendall(f"Connected".encode(FORMAT))
+                        while True:
+                            direct_msg = conn.recv(1024).decode(FORMAT)
+                            if direct_msg == DISCONNECT_MESSAGE:
+                                break
+                            target_conn.sendall(f"PRIVATE: [{client_id}]: {direct_msg}".encode(FORMAT))
+                    else:
+                        conn.sendall(f"CLIENT: {target_id} not found.".encode(FORMAT))
                 except Exception as e:
-                    print(e)
-                    #conn.sendall("Usage: /connect <client_id>".encode(FORMAT))
-                    # conn.sendall(str(e).encode(FORMAT))
+                    conn.sendall("Usage: /connect <client_id>".encode(FORMAT))
 
             else:
                 with clients_lock:
                     for cid, c in clients.items():
                         if cid != client_id:
-                            c.sendall(f"[{client_id}] {msg} banana".encode(FORMAT))
+                            c.sendall(f"PUBLIC | [{client_id}] {msg}".encode(FORMAT))
 
     except Exception as e:
         print(f"[ERROR] {e}")
